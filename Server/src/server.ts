@@ -3,6 +3,8 @@ import dotenv from "dotenv"
 import { dbConnect } from "./config/db.config.js"
 import { Env } from "./config/db.config.js"
 import cors from "cors"
+import { errorHandler } from "./middleware/errorHandler.middleware.js"
+import { NotFoundException } from "./utils/app-error.js"
 dotenv.config()
 const app = express()
 
@@ -17,9 +19,10 @@ app.use(
 
 
 app.get('/', (req: Request, res: Response) => {
+   throw new NotFoundException("Test Error Handling Middleware")
    res.send('Hello World!')
 })
-
+app.use(errorHandler)
 app.listen(Env.PORT, async () => {
    await dbConnect();
    console.log(`Server is running in ${Env.NODE_ENV} mode: http://localhost:${Env.PORT}`);
