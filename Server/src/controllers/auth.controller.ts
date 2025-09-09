@@ -19,3 +19,11 @@ export const loginController = asyncHandler(async (req: Request, res: Response) 
    const { user, accessToken, expiresAt, reportSetting } = await loginService(data)
    return res.status(HTTPSTATUS.OK).json({ message: "User logged in successfully", user, accessToken, expiresAt, reportSetting });
 })
+
+
+export const getProfile = asyncHandler(async (req: Request, res: Response) => {
+
+   console.log(req.auth._id);
+
+   return res.status(HTTPSTATUS.OK).json({ message: "User profile fetched successfully" })
+})
