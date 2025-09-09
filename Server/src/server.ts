@@ -5,6 +5,7 @@ import { Env } from "./config/db.config.js"
 import cors from "cors"
 import { errorHandler } from "./middleware/errorHandler.middleware.js"
 import { NotFoundException } from "./utils/app-error.js"
+import authRouter from "./routes/auth.routes.js"
 dotenv.config()
 const app = express()
 
@@ -18,10 +19,9 @@ app.use(
 );
 
 
-app.get('/', (req: Request, res: Response) => {
-   throw new NotFoundException("Test Error Handling Middleware")
-   res.send('Hello World!')
-})
+
+
+app.use("/api/v1", authRouter)
 app.use(errorHandler)
 app.listen(Env.PORT, async () => {
    await dbConnect();
