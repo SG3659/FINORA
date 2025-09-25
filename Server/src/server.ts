@@ -6,6 +6,7 @@ import cors from "cors"
 import { errorHandler } from "./middleware/errorHandler.middleware.js"
 import { NotFoundException } from "./utils/app-error.js"
 import authRouter from "./routes/auth.routes.js"
+import transactionRouter from "./routes/transaction.routes.js"
 dotenv.config()
 const app = express()
 
@@ -17,11 +18,8 @@ app.use(
       credentials: true,
    })
 );
-
-
-
-
 app.use("/api/v1", authRouter)
+app.use("/api/v1/transaction", transactionRouter)
 app.use(errorHandler)
 app.listen(Env.PORT, async () => {
    await dbConnect();

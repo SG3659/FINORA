@@ -21,9 +21,9 @@ export enum TransactionTypeEnum {
 
 export enum PaymentMethodEnum {
    CARD = "CARD",
-   BANK_TRANSFER = "BANK_TRANSFER",
-   MOBILE_PAYMENT = "MOBILE_PAYMENT",
-   AUTO_DEBIT = "AUTO_DEBIT",
+   BANK_TRANSFER = "BANK TRANSFER",
+   MOBILE_PAYMENT = "MOBILE PAYMENT",
+   AUTO_DEBIT = "AUTO DEBIT",
    CASH = "CASH",
    OTHER = "OTHER",
 }

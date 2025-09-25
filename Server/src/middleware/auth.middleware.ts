@@ -14,7 +14,6 @@ declare global {
 const AuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
    try {
       const token = req.header("Authorization");
-      // const token = req.cookies.token;
 
       if (!token) {
          return res.status(401).json({ message: "Please login or Register." });
