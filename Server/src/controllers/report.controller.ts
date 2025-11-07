@@ -3,7 +3,7 @@ import { asyncHandler } from "../middleware/asyncHandler.middleware.js";
 import { HTTPSTATUS } from "../config/http.config.js";
 import { getAllReportService } from "../services/report.service.js";
 import { updateReportSettingSchema } from "../validators/report.validator.js";
-import { updateReoprtService, genrateReoprtService } from "../services/report.service.js";
+import { updateReoprtService, genrateReportService } from "../services/report.service.js";
 export const getAllReposrtController = asyncHandler(
    async (req: Request, res: Response) => {
       const UserId = req.auth?._id;
@@ -30,7 +30,7 @@ export const generateReportController = asyncHandler(async (req: Request, res: R
    const fromDate = new Date(from as string);
    const toDate = new Date(to as string);
 
-   const result = await genrateReoprtService(UserId, fromDate, toDate);
+   const result = await genrateReportService(UserId, fromDate, toDate);
 
    return res.status(HTTPSTATUS.OK).json({
       message: "Report generated successfully",

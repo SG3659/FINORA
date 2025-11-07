@@ -2,14 +2,14 @@ import ReportModel from "../model/report.model.js";
 import ReportSettingModel from "../model/report-setting.model.js";
 import { UnauthorizedException, NotFoundException } from "../utils/app-error.js";
 import type { UpdateReportSettingType } from "../validators/report.validator.js";
-import { calulateNextReportDate } from "../utils/helper.js"
+import { calculateNextReportDate, calculateSavingRate } from "../utils/helper.js"
 import TransactionModel, { TransactionTypeEnum } from "../model/transaction.model.js";
 import mongoose from "mongoose";
 import { convertToRupee } from "../utils/format-currency.js";
 import { format } from "date-fns";
 import { ai, genAIModel } from "../config/google-ai.config.js";
-import { createUserContent } from "@google/genai"
 import { reportInsightPrompt } from "../utils/prompt.js"
+import generateInsightsAI from "../utils/ai-insights.js";
 export const getAllReportService = async (UserId: string, pagination: {
    pageSize: number;
    pageNumber: number
@@ -59,7 +59,7 @@ export const updateReoprtService = async (UserId: string, body: UpdateReportSett
       const currentNextReportDate = existingReportSetting.nextReportDate;
       const now = new Date();
       if (!currentNextReportDate || currentNextReportDate <= now) {
-         nextReportDate = calulateNextReportDate(
+         nextReportDate = calculateNextReportDate(
             existingReportSetting.lastSentDate
          );
       } else {
@@ -74,7 +74,7 @@ export const updateReoprtService = async (UserId: string, body: UpdateReportSett
    await existingReportSetting.save();
 }
 
-export const genrateReoprtService = async (UserId: string,
+export const genrateReportService = async (UserId: string,
    fromDate: Date,
    toDate: Date) => {
 
@@ -190,56 +190,4 @@ export const genrateReoprtService = async (UserId: string,
       },
       insights,
    };
-}
-
-function calculateSavingRate(totalIncome: number, totalExpenses: number) {
-   if (totalIncome <= 0) return 0;
-   const savingRate = ((totalIncome - totalExpenses) / totalIncome) * 100;
-   return parseFloat(savingRate.toFixed(2));
-}
-
-async function generateInsightsAI({
-   totalIncome,
-   totalExpenses,
-   availableBalance,
-   savingsRate,
-   categories,
-   periodLabel
-}: {
-   totalIncome: number;
-   totalExpenses: number;
-   availableBalance: number;
-   savingsRate: number;
-   categories: Record<string, { amount: number; percentage: number }>;
-   periodLabel: string;
-}) {
-   try {
-      const prompt = reportInsightPrompt({
-         totalIncome: Number(convertToRupee(totalIncome)),
-         totalExpenses: Number(convertToRupee(totalExpenses)),
-         availableBalance: Number(convertToRupee(availableBalance)),
-         savingsRate: Number(savingsRate.toFixed(1)),
-         categories,
-         periodLabel,
-      });
-      const result = await ai.models.generateContent({
-         model: genAIModel,
-         contents: [createUserContent([prompt])],
-         config: {
-            responseMimeType: "application/json",
-         },
-      });
-
-      const response = result.text;
-      console.log(response)
-      const cleanedText = response?.replace(/```(?:json)?\n?/g, "").trim();
-
-      if (!cleanedText) return [];
-
-      const data = JSON.parse(cleanedText);
-      return data;
-
-   } catch (error) {
-      return [];
-   }
 }

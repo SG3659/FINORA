@@ -1,6 +1,6 @@
 import { startOfMonth, addMonths, setHours, addDays, addWeeks, addYears } from "date-fns"
 import { RecurringIntervalEnum } from "../model/transaction.model.js";
-export function calulateNextReportDate(lastSentDate?: Date): Date {
+export function calculateNextReportDate(lastSentDate?: Date): Date {
    const now = new Date();
    const lastSent = lastSentDate || now;
 
@@ -26,4 +26,14 @@ export function calculateNextOccurrence(date: Date, recurringInterval: keyof typ
       default:
          return base;
    }
+}
+
+export function capitalizeFirstLetter(string: string) {
+   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}
+
+export function calculateSavingRate(totalIncome: number, totalExpenses: number) {
+   if (totalIncome <= 0) return 0;
+   const savingRate = ((totalIncome - totalExpenses) / totalIncome) * 100;
+   return parseFloat(savingRate.toFixed(2));
 }

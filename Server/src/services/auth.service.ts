@@ -3,7 +3,7 @@ import UserModel from "../model/user.model.js";
 import { UnauthorizedException, NotFoundException } from "../utils/app-error.js";
 import mongoose from "mongoose";
 import ReportSettingModel, { ReportFrequencyEnum } from "../model/report-setting.model.js";
-import { calulateNextReportDate } from "../utils/helper.js"
+import { calculateNextReportDate } from "../utils/helper.js"
 import { signJwtToken } from "../utils/jwt.js"
 export const registerService = async (body: registerSchemaType) => {
    const { email } = body
@@ -24,7 +24,7 @@ export const registerService = async (body: registerSchemaType) => {
             userId: newUser._id,
             frequency: ReportFrequencyEnum.MONTHLY,
             isEnabled: true,
-            nextReportDate: calulateNextReportDate(),
+            nextReportDate: calculateNextReportDate(),
             lastSentDate: null,
          });
          await reportSetting.save({ session });
