@@ -43,7 +43,7 @@ export const processRecurringTransactions = async () => {
                      ],
                      { session }
                   );
-
+                  // update the nextRecurringDate
                   await TransactionModel.updateOne(
                      { _id: tx._id },
                      {

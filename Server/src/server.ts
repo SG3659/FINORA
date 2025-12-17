@@ -29,8 +29,8 @@ app.use("/api/v1/analytics", analyticsRoutes)
 app.use(errorHandler)
 app.listen(Env.PORT, async () => {
    await dbConnect();
-   // if (Env.NODE_ENV === "development") {
-   //    await initializeCrons();
-   // }
+   if (Env.NODE_ENV === "development") {
+      await initializeCrons();
+   }
    console.log(`Server is running in ${Env.NODE_ENV} mode: http://localhost:${Env.PORT}`);
 });

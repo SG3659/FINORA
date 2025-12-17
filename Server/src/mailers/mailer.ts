@@ -1,5 +1,22 @@
 import { Env } from "../config/env.config.js";
-import { resend } from "../config/resend.config.js";
+
+import nodemailer, { createTransport } from "nodemailer"
+const transporter = nodemailer.createTransport({
+   service: "gmail",
+   auth: {
+      user: Env.EMAIL,
+      pass: Env.PASSWORD,
+   },
+});
+
+// Verify the transporter configuration
+transporter.verify((error, success) => {
+   if (error) {
+      console.log("Error setting up email transporter:", error);
+   } else {
+      console.log("Email transporter ready for messages:", success);
+   }
+});
 
 type Params = {
    to: string | string[];
@@ -9,7 +26,7 @@ type Params = {
    from?: string;
 };
 
-const mailer_sender = `AuroraFi <${Env.RESEND_MAILER_SENDER}>`;
+const mailer_sender = `FINORA <${Env.EMAIL}>`;
 
 export const sendEmail = async ({
    to,
@@ -18,11 +35,13 @@ export const sendEmail = async ({
    text,
    html,
 }: Params) => {
-   return await resend.emails.send({
+
+
+   return await transporter.sendMail({
       from,
-      to: Array.isArray(to) ? to : [to],
-      text,
+      to,
       subject,
+      text,
       html,
-   });
+   })
 };

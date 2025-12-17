@@ -5,7 +5,7 @@ import { UnauthorizedException, NotFoundException, BadRequestException } from ".
 import axios from "axios"
 import { ai, genAIModel } from "../config/google-ai.config.js";
 import { receiptPrompt } from "../utils/prompt.js";
-import { createUserContent, createPartFromBase64 } from "@google/genai";
+import { createUserContent, createPartFromBase64 } from "@google/genai";   
 export const createTransactionService = async (body: CreateTransactionType, UserId: string) => {
    let nextRecurringDate: Date | undefined
    const currentDate = new Date()
@@ -182,6 +182,7 @@ export const bulkDeleteTransactionService = async (UserId: string, transactionId
    };
 
 }
+
 
 
 export const bulkTransactionService = async (UserId: string, transactions: CreateTransactionType[]) => {

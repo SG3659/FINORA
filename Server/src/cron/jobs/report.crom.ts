@@ -7,7 +7,7 @@ import ReportModel, { ReportStatusEnum } from "../../model/report.model.js";
 import { calculateNextReportDate } from "../../utils/helper.js";
 import { sendReportEmail } from "../../mailers/report.mailer.js";
 export const processReportJob = async () => {
-   const now = new Date();
+   const now = new Date("2025-09-30T18:40:00.000+00:00");
    //Today july 1, then run report for -> june 1 - 30 
    //Get Last Month because this will run on the first of the month
    const from = startOfMonth(subMonths(now, 1));
@@ -36,6 +36,7 @@ export const processReportJob = async () => {
             const report = await genrateReportService(user.id, from, to);
             console.log(report, "resport data");
             let emailSent = false;
+            //mail to user
             if (report) {
                try {
                   await sendReportEmail({

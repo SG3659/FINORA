@@ -4,7 +4,7 @@ import { HTTPSTATUS } from "../config/http.config.js";
 import { getAllReportService } from "../services/report.service.js";
 import { updateReportSettingSchema } from "../validators/report.validator.js";
 import { updateReoprtService, genrateReportService } from "../services/report.service.js";
-export const getAllReposrtController = asyncHandler(
+export const getAllReportController = asyncHandler(
    async (req: Request, res: Response) => {
       const UserId = req.auth?._id;
       const pagination = {
