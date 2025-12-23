@@ -1,10 +1,12 @@
 import type { registerSchemaType, loginSchemaType } from "../validators/auth.validator.js"
 import UserModel from "../model/user.model.js";
-import { UnauthorizedException, NotFoundException } from "../utils/app-error.js";
+import { UnauthorizedException, NotFoundException, InternalServerException } from "../utils/app-error.js";
 import mongoose from "mongoose";
 import ReportSettingModel, { ReportFrequencyEnum } from "../model/report-setting.model.js";
 import { calculateNextReportDate } from "../utils/helper.js"
-import { signJwtToken } from "../utils/jwt.js"
+import { accessJwtToken, refreshJwtToken } from "../utils/jwt.js"
+import jwt, { type JwtPayload } from "jsonwebtoken"
+import { Env } from "../config/env.config.js";
 export const registerService = async (body: registerSchemaType) => {
    const { email } = body
 
@@ -33,7 +35,7 @@ export const registerService = async (body: registerSchemaType) => {
       });
 
    } catch (error) {
-      throw new NotFoundException("Registration failed");
+      throw error
    }
    finally {
       session.endSession();
@@ -41,6 +43,12 @@ export const registerService = async (body: registerSchemaType) => {
 }
 
 export const loginService = async (body: loginSchemaType) => {
+   //  body -> data
+   // username or email
+   //find the user
+   //password check
+   //access and referesh token
+   //send cookie
    const { email, password } = body
    const user = await UserModel.findOne({ email })
    if (!user) {
@@ -49,7 +57,7 @@ export const loginService = async (body: loginSchemaType) => {
    const isPasswordValid = await user.comparePassword(password);
    if (!isPasswordValid) throw new UnauthorizedException("Invalid password");
 
-   const { token, expiresAt } = signJwtToken({ userId: user.id });
+   const { refreshTokenData, accessTokenData } = await generateRefreshAndAccessToken(user.id);
    const reportSetting = await ReportSettingModel.findOne(
       {
          userId: user.id,
@@ -59,10 +67,48 @@ export const loginService = async (body: loginSchemaType) => {
 
    return {
       user: user.omitPassword(),
-      accessToken: token,
-      expiresAt,
+      access: accessTokenData,
+      refresh: refreshTokenData,
       reportSetting,
 
    }
+}
 
+export const refereshTokenService = async (incomingRefreshToken: string) => {
+   //veerify refresh token
+   // 
+   try {
+      const decodedToken = jwt.verify(incomingRefreshToken, Env.JWT_REFRESH_SECRET) as JwtPayload;
+      const user = await UserModel.findById(decodedToken?.userId).select("-password");
+      if (!user) {
+         throw new NotFoundException("User not found");
+      }
+      if (incomingRefreshToken !== user.resetToken) {
+         throw new UnauthorizedException("refreshToken mismatch")
+      }
+      const { refreshTokenData, accessTokenData } = await generateRefreshAndAccessToken(user.id)
+      return { accessToken: accessTokenData, newRefreshToken: refreshTokenData }
+
+   } catch (error) {
+      throw new InternalServerException("Could not refresh token")
+   }
+
+}
+
+// generate refresh and access token
+const generateRefreshAndAccessToken = async (userId: any) => {
+   try {
+      const user = await UserModel.findById(userId)
+      if (!user) {
+         throw new NotFoundException("User not found");
+      }
+      const refreshTokenData = refreshJwtToken({ userId: user.id });
+      const accessTokenData = accessJwtToken({ userId: user.id });
+      user.resetToken = refreshTokenData.refreshToken;
+      await user.save({ validateBeforeSave: false });
+      return { refreshTokenData, accessTokenData }
+   }
+   catch (error) {
+      throw error;
+   }
 }

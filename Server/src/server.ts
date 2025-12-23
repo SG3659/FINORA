@@ -4,18 +4,19 @@ import { dbConnect } from "./config/db.config.js"
 import { Env } from "./config/db.config.js"
 import cors from "cors"
 import { errorHandler } from "./middleware/errorHandler.middleware.js"
-import { NotFoundException } from "./utils/app-error.js"
 import authRouter from "./routes/auth.routes.js"
 import transactionRouter from "./routes/transaction.routes.js"
 import reportRouter from "./routes/report.routes.js"
 import { initializeCrons } from "./cron/index.js"
 import { getDateRange } from "./utils/date.js"
 import analyticsRoutes from "./routes/analytic.routes.js"
+import cookieParser from "cookie-parser"
 dotenv.config()
 const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser())
 app.use(
    cors({
       origin: Env.FRONTEND_ORIGIN,

@@ -5,6 +5,7 @@ export interface IUser extends Document {
    email: string,
    password: string,
    profilePicture: string | null;
+   resetToken: string | null;
    createdAt: Date;
    updatedAt: Date;
    comparePassword: (password: string) => Promise<boolean>;
@@ -28,6 +29,11 @@ const userSchema = new mongoose.Schema<IUser>({
       type: String,
       default: null,
    },
+   resetToken: {
+      type: String,
+      select: false,
+      default: null,
+   },
    password: {
       type: String,
       select: true,
@@ -45,7 +51,7 @@ userSchema.pre("save", async function (next) {
    }
    next();
 });
-
+// this is use so any by chance password would get expose 
 userSchema.methods.omitPassword = function (): Omit<IUser, "password"> {
    const userObject = this.toObject();
    delete userObject.password;
