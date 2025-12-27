@@ -24,6 +24,10 @@ const AuthMiddleware = async (req: Request, res: Response, next: NextFunction) =
       const verified = jwt.verify(tokenWithoutBearer, Env.JWT_SECRET) as jwt.JwtPayload;
       const user = await User.findById(verified.userId).select("-password");
 
+      if (!user) {
+         return res.status(HTTPSTATUS.UNAUTHORIZED).json({ message: "User not found. Please log in again." });
+      }
+
       req.auth = user;
       next();
    } catch (error) {

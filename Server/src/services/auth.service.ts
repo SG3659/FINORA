@@ -94,9 +94,8 @@ export const refereshTokenService = async (incomingRefreshToken: string) => {
    }
 
 }
-
 // generate refresh and access token
-const generateRefreshAndAccessToken = async (userId: any) => {
+const generateRefreshAndAccessToken = async (userId: string) => {
    try {
       const user = await UserModel.findById(userId)
       if (!user) {
