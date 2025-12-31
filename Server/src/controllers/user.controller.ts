@@ -13,11 +13,11 @@ export const getUserProfileController = asyncHandler(async (req: Request, res: R
 })
 export const updateUserProfileController = asyncHandler(async (req: Request, res: Response) => {
    const userId = req.auth._id;
-   const body = updateUserschema.parse(req.body);
+   const body = req.body ? updateUserschema.parse(req.body) : {};
    const profilePics = req.file;
    const updateUser = await updateUserProfileService(userId, body, profilePics);
    return res.status(HTTPSTATUS.OK).json({
-      message: "User fetched successfully",
+      message: "User updated successfully",
       data: updateUser,
    });
 }
