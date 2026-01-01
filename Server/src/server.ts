@@ -12,6 +12,7 @@ import { getDateRange } from "./utils/date.js"
 import analyticsRoutes from "./routes/analytic.routes.js"
 import cookieParser from "cookie-parser"
 import userRouter from "./routes/user.routes.js"
+import { apiLimiter } from "./utils/api-limitter.js"
 dotenv.config()
 const app = express()
 
@@ -24,6 +25,7 @@ app.use(
       credentials: true,
    })
 );
+app.use(apiLimiter)
 app.use("/api/v1", authRouter)
 app.use("/api/v1/transaction", transactionRouter)
 app.use("/api/v1/report", reportRouter)
