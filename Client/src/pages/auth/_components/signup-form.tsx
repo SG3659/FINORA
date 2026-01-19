@@ -16,7 +16,7 @@ import { AUTH_ROUTES } from '@/routes/common/routePath'
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
 import { useRegisterMutation } from "@/api/auth/authApi"
-
+import { generatePasswordStrenght } from '@/utils/hleper'
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -34,6 +34,10 @@ const SignUpForm = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
   });
+
+
+  // const passwordValue = form.watch("password");
+  // const passwordStrength = generatePasswordStrenght(passwordValue || "");
   const [register, { isLoading }] = useRegisterMutation();
   const navigate = useNavigate()
   const submitHandler = (values: FormValues) => {
@@ -81,7 +85,7 @@ const SignUpForm = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="m@example.com" {...field} />
+                  <Input placeholder="m@example.com" {...field} required />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -90,16 +94,36 @@ const SignUpForm = () => {
           <FormField
             control={form.control}
             name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              const strength = generatePasswordStrenght(field.value || "")
+              return (
+                < FormItem >
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="••••••••"
+                      {...field} />
+
+
+                  </FormControl>
+                  {field.value && (
+                    <p
+                      className={`text-sm font-medium mt-1 ${strength === "weak"
+                        ? "text-red-500"
+                        : strength === "fair"
+                          ? "text-yellow-500"
+                          : "text-green-600"
+                        }`}
+                    >
+                      Password strength: {strength.toUpperCase()}
+                    </p>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )
+            }}
           />
+
+
           <Button type="submit" className="w-full">
             {isLoading && <Loader className="h-4 w-4 animate-spin" />}
             Sign up
@@ -129,7 +153,7 @@ const SignUpForm = () => {
           </Link>
         </div>
       </form>
-    </Form>
+    </Form >
   )
 }
 

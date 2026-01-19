@@ -16,6 +16,13 @@ export const authApi = apiClient.injectEndpoints({
             body: credentials,
          }),
       }),
+      otpVerify: builder.mutation({
+         query: (credentials) => ({
+            url: "/otp-verify",
+            method: "POST",
+            body: credentials,
+         }),
+      }),
 
       logout: builder.mutation({
          query: () => ({
@@ -34,6 +41,7 @@ export const authApi = apiClient.injectEndpoints({
 
 export const {
    useLoginMutation,
+   useOtpVerifyMutation,
    useRegisterMutation,
    useRefreshMutation,
    useLogoutMutation,

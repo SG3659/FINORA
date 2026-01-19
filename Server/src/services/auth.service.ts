@@ -87,7 +87,7 @@ export const loginService = async (body: loginSchemaType) => {
    }
 
 
-   const reportSetting =  await ReportSettingModel.findOne(
+   const reportSetting = await ReportSettingModel.findOne(
       { userId: user.id },
       { _id: 1, frequency: 1, isEnabled: 1 }
    ).lean();
@@ -122,6 +122,7 @@ export const otpVerifyService = async (body: otpSchemaType) => {
    }
 
    const { refreshTokenData, accessTokenData } = await generateRefreshAndAccessToken(user.id);
+
 
    await OtpModel.findOneAndDelete({ email });
 
