@@ -17,12 +17,12 @@ export const registerController = asyncHandler(
 
 export const loginController = asyncHandler(async (req: Request, res: Response) => {
    const data = loginSchema.parse(req.body);
-   const { user, reportSetting } = await loginService(data)
+   await loginService(data)
 
    return res
       .status(HTTPSTATUS.OK)
 
-      .json({ message: "User logged & email sent successfully", user, reportSetting });
+      .json({ message: "User logged & email sent successfully" });
 })
 export const otpVerifyController = asyncHandler(async (req: Request, res: Response) => {
    const data = otpSchema.parse(req.body);
@@ -35,12 +35,17 @@ export const otpVerifyController = asyncHandler(async (req: Request, res: Respon
       secure: true,
       sameSite: "none",
    }
-   const { access, refresh } = await otpVerifyService(data)
+   const { accessToken,
+      refreshToken,
+      expiresAt,
+      refreshExpireAt, user, reportSetting } = await otpVerifyService(data)
    return res
       .status(HTTPSTATUS.OK)
-      .cookie("refresh", refresh, options)
-      .cookie("access", access, options)
-      .json({ message: "User logged in successfully", access: access, refresh: refresh });
+      .cookie("refresh", refreshToken, options)
+      .cookie("access", accessToken, options)
+      .json({
+         message: "User logged in successfully", accessToken, refreshToken, expiresAt, refreshExpireAt, user, reportSetting
+      });
 })
 
 export const refreshTokenController = asyncHandler(async (req: Request, res: Response) => {

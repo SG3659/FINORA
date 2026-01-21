@@ -13,6 +13,7 @@ import { Env } from "../config/env.config.js";
 import { sendOtpEmail } from "../mailers/otp.mailer.js";
 import { generateOtp } from "../utils/otp-generator.js";
 import type { otpSchemaType } from "../validators/otp.validator.js";
+import { any } from "zod";
 export const registerService = async (body: registerSchemaType) => {
    const { email } = body
 
@@ -84,18 +85,7 @@ export const loginService = async (body: loginSchemaType) => {
          otp_expireAt: new Date(Date.now() + 10 * 60 * 1000)
       });
       await otpRecord.save();
-   }
-
-
-   const reportSetting =  await ReportSettingModel.findOne(
-      { userId: user.id },
-      { _id: 1, frequency: 1, isEnabled: 1 }
-   ).lean();
-
-   return {
-      user: user.omitPassword(),
-      reportSetting,
-   }
+   }  
 }
 export const otpVerifyService = async (body: otpSchemaType) => {
    const { email, otp } = body;
@@ -104,10 +94,6 @@ export const otpVerifyService = async (body: otpSchemaType) => {
    if (!otpRecord) {
       throw new UnauthorizedException("Invalid email");
    }
-
-
-
-
    if (otpRecord.otp_expireAt < new Date()) {
       throw new UnauthorizedException("OTP has expired");
    }
@@ -121,14 +107,23 @@ export const otpVerifyService = async (body: otpSchemaType) => {
       throw new NotFoundException("User not found");
    }
 
-   const { refreshTokenData, accessTokenData } = await generateRefreshAndAccessToken(user.id);
+   const { refreshToken, accessToken, tokenExpiresAt, refreshExpiresAt } = await generateRefreshAndAccessToken(user.id);
 
    await OtpModel.findOneAndDelete({ email });
 
 
+   const reportSetting = await ReportSettingModel.findOne(
+      { userId: user.id },
+      { _id: 1, frequency: 1, isEnabled: 1 }
+   ).lean();
+
    return {
-      access: accessTokenData,
-      refresh: refreshTokenData,
+      user: user.omitPassword(),
+      accessToken,
+      refreshToken,
+      expiresAt: tokenExpiresAt,
+      refreshExpireAt: refreshExpiresAt,
+      reportSetting
    };
 }
 
@@ -144,8 +139,8 @@ export const refereshTokenService = async (incomingRefreshToken: string) => {
       if (incomingRefreshToken !== user.resetToken) {
          throw new UnauthorizedException("refreshToken mismatch")
       }
-      const { refreshTokenData, accessTokenData } = await generateRefreshAndAccessToken(user.id)
-      return { accessToken: accessTokenData, newRefreshToken: refreshTokenData }
+      const { refreshToken, accessToken, tokenExpiresAt, refreshExpiresAt } = await generateRefreshAndAccessToken(user.id)
+      return { accessToken: accessToken, newRefreshToken: refreshToken }
 
    } catch (error) {
       throw new InternalServerException("Could not refresh token")
@@ -159,11 +154,11 @@ const generateRefreshAndAccessToken = async (userId: string) => {
       if (!user) {
          throw new NotFoundException("User not found");
       }
-      const refreshTokenData = refreshJwtToken({ userId: user.id });
-      const accessTokenData = accessJwtToken({ userId: user.id });
-      user.resetToken = refreshTokenData.refreshToken;
+      const { refreshToken, refreshExpiresAt } = refreshJwtToken({ userId: user.id });
+      const { accessToken, tokenExpiresAt } = accessJwtToken({ userId: user.id });
+      user.resetToken = refreshToken;
       await user.save({ validateBeforeSave: false });
-      return { refreshTokenData, accessTokenData }
+      return { refreshToken, accessToken, tokenExpiresAt, refreshExpiresAt }
    }
    catch (error) {
       throw error;

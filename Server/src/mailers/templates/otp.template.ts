@@ -1,7 +1,7 @@
 import { generateOtp } from "../../utils/otp-generator.js"
 export const otpTemplate = (otp: string) => {
 
-   return `
+  return `
      <!DOCTYPE html>
 <html>
 <head>
@@ -45,8 +45,8 @@ h1 {
     <h1>Enter this code to sign in</h1>
     <div class="code">${otp}</div>
     <div class="instructions">
-      Enter the code above on your device to sign in to Netflix.<br>
-      This code will expire in 15 minutes.
+      Enter the code above on your device to sign in to AuroraFi.<br>
+      This code will expire in 10 minutes.
     </div>
     <div>
       If you didn't send this request, you can ignore this email or
