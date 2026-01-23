@@ -42,7 +42,7 @@ export const getAllTransactionController = asyncHandler(
          pageNumber: parseInt(req.query.page as string) || 1,
       }
       const result = await getAllTransactionService(UserId, filters, pagination)
-      return res.status(HTTPSTATUS.OK).json({ message: "Transaction Fetch successfully", data: result })
+      return res.status(HTTPSTATUS.OK).json({ message: "Transaction Fetch successfully", ...result })
    }
 )
 
