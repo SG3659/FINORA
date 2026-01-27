@@ -1,33 +1,40 @@
 import { useState } from "react";
-import DataTable from "./data-table";
-import { useGetAllTransactionsQuery } from "@/api/transaction/transactionApi"
+import DataTable from "../data-table/index";
+import { useGetAllTransactionsQuery, useBulkDeleteTransactionMutation } from "@/api/transaction/transactionApi"
 import { _TransactionType, FilterType } from "@/@types/transaction/transactionTypes";
-
+import { transactionColumns } from "./column";
+import useDebounce from "@/hook/use-debounce-search";
+import { toast } from "sonner"
 const TransactionTable = (props: {
    pageSize?: number,
    isShowPagination?: boolean;
 
 }) => {
 
+
    const [filter, setFilter] = useState<FilterType>({
       keyword: undefined,
       type: undefined,
       recurringStatus: undefined,
       pageNumber: 1,
-      pageSize: props.pageSize || 10,
+      pageSize: props.pageSize || 20,
    })
-   const { data, isFetching: isFetchingData, error } = useGetAllTransactionsQuery({
-      keyword: filter.keyword,
+
+   const { debounceSearch, search, setSearch } = useDebounce(500);
+   const { data, isFetching: isFetchingData } = useGetAllTransactionsQuery({
+      keyword: debounceSearch,
       type: filter.type,
       recurringStatus: filter.recurringStatus,
       pageNumber: filter.pageNumber,
       pageSize: filter.pageSize,
    });
    console.log("API Response:", data);
-   console.log("API Error:", error);
-   const transactions = data?.data?.transations || [];
+   // console.log("API Error:", error);
+   const [bulkDeleteTransaction, { isLoading: isBulkDeleting }] =
+      useBulkDeleteTransactionMutation();
+   const transactions = data?.transations || [];
 
-   console.log("Transactions:", transactions)
+   // console.log("Transactions:", transactions)
    const pagination = {
       totalItems: data?.pagination?.totalCount || 0,
       totalPages: data?.pagination?.totalPages || 0,
@@ -52,10 +59,20 @@ const TransactionTable = (props: {
    const handlePageSizeChange = (pageSize: number) => {
       setFilter((prev) => ({ ...prev, pageSize }));
    };
+   const handleBulkDelete = async (ids: string[]) => {
+      try {
+         await bulkDeleteTransaction(ids).unwrap();
+         toast.success("Transactions deleted successfully");
+      } catch (error) {
+         console.error("Failed to bulk delete transactions:", error);
+      }
+   }
 
    return (
       <DataTable
          isLoading={isFetchingData}
+         isBulkDeleting={isBulkDeleting}
+         columns={transactionColumns}
          isShowPagination={props.isShowPagination}
          data={transactions}
          pagination={pagination}
@@ -80,6 +97,12 @@ const TransactionTable = (props: {
          onPageChange={(pageNumber: number) => handlePageChange(pageNumber)}
          onPageSizeChange={(pageSize: number) => handlePageSizeChange(pageSize)}
          onFilterChange={(filters: Record<string, string>) => handleFilterChange(filters)}
+         onBulkDelete={handleBulkDelete}
+         selection={true}
+         searchPlaceholder="Search transactions..."
+         setSearch={setSearch}
+         search={search}
+         showSearch={true}
       />
    )
 }

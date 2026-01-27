@@ -1,6 +1,6 @@
 import apiClient from "@/api/rtkquery/apiClent";
 
-import { GetAllTransactionParams, GetAllTransactionResponse } from "@/@types/transaction/transactionTypes";
+import { GetAllTransactionParams, GetAllTransactionResponse, CreateTransactionBody, UpdateTransactionPayload, GetSingleTransactionResponse, BulkImportTransactionPayload } from "@/@types/transaction/transactionTypes";
 
 const transactionApi = apiClient.injectEndpoints({
    endpoints: (builder) => ({
@@ -28,7 +28,62 @@ const transactionApi = apiClient.injectEndpoints({
          },
          providesTags: ["transactions"],
       }),
+      duplicateTransaction: builder.mutation<void, string>({
+         query: (id) => ({
+            url: `/transaction/duplicate/${id}`,
+            method: "PUT",
+         }),
+         invalidatesTags: ["transactions"],
+      }),
+      deleteTransaction: builder.mutation({
+         query: (id) => (
+            {
+               url: `/transaction/delete/${id}`,
+               method: "DELETE",
+            }
+         ),
+         invalidatesTags: ["transactions", "analytics"],
+      }),
+      bulkDeleteTransaction: builder.mutation<void, string[]>({
+         query: (transactionIds) => ({
+            url: `/transaction/bulk-delete`,
+            method: "DELETE",
+            body: { transactionIds }
+         }),
+         invalidatesTags: ["transactions", "analytics"],
+      }),
+      createTransaction: builder.mutation<void, CreateTransactionBody>({
+         query: (data) => ({
+            url: `/transaction/create`,
+            method: "POST",
+            body: data,
+         }),
+         invalidatesTags: ["transactions", "analytics"],
+      }),
+      updateTransaction: builder.mutation<void, UpdateTransactionPayload>({
+         query: ({ id, transaction }) => ({
+            url: `/transaction/update/${id}`,
+            method: "PUT",
+            body: transaction
+         }),
+      }),
+      getSingleTransaction: builder.query<GetSingleTransactionResponse, string>({
+         query: (id) => ({
+            url: `/transaction/${id}`,
+            method: "GET",
+         }),
+      }),
+      bulkImportTransaction: builder.mutation<void, BulkImportTransactionPayload>(
+         {
+            query: (body) => ({
+               url: "/transaction/bulk-transaction",
+               method: "POST",
+               body,
+            }),
+            invalidatesTags: ["transactions"],
+         }
+      ),
    })
 })
 
-export const { useGetAllTransactionsQuery } = transactionApi
+export const { useGetAllTransactionsQuery, useDeleteTransactionMutation, useDuplicateTransactionMutation, useBulkDeleteTransactionMutation, useCreateTransactionMutation, useUpdateTransactionMutation, useGetSingleTransactionQuery, useBulkImportTransactionMutation } = transactionApi
