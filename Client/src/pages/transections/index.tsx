@@ -26,6 +26,6 @@ export default function Transactions() {
           <TransactionTable pageSize={20} />
         </CardContent>
       </Card>
-    // </PageLayout>
+    </PageLayout>
   );
 }

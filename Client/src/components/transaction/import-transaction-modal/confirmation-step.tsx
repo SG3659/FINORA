@@ -1,4 +1,4 @@
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { z } from "zod";
 import { ChevronDown, ChevronLeft, FileCheck } from "lucide-react";
@@ -33,13 +33,10 @@ const transactionSchema = z.object({
          required_error: "Amount is required",
       })
       .positive("Amount must be greater than zero"),
-   date: z.preprocess(
-      (val) => new Date(val as string),
-      z.date({
-         invalid_type_error: "Invalid date format",
-         required_error: "Date is required",
-      })
-   ),
+   date: z.date({
+      invalid_type_error: "Invalid date format",
+      required_error: "Date is required",
+   }),
    type: z.enum([_TransactionType.INCOME, _TransactionType.EXPENSE], {
       invalid_type_error: "Invalid transaction type",
       required_error: "Transaction type is required",
