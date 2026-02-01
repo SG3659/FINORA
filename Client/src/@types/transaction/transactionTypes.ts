@@ -44,10 +44,10 @@ export const _TransactionFrequency = {
 
 export const _PaymentMethodsEnum = {
    CARD: "CARD",
-   BANK_TRANSFER: "BANK_TRANSFER",
-   MOBILE_PAYMENT: "MOBILE_PAYMENT",
+   BANK_TRANSFER: "BANK TRANSFER",
+   MOBILE_PAYMENT: "MOBILE PAYMENT",
    CASH: "CASH",
-   AUTO_DEBIT: "AUTO_DEBIT",
+   AUTO_DEBIT: "AUTO DEBIT",
    OTHER: "OTHER",
 } as const;
 
@@ -186,7 +186,17 @@ export type TransactionField = {
    description?: string;
 };
 
+export type ColumnMappingStepProps = {
+   csvColumns: CsvColumn[];
+   transactionFields: TransactionField[];
+   mappings: Record<string, string>;
+   onComplete: (mappings: Record<string, string>) => void;
+   onBack: () => void;
+};
 
+export type AvailableAttributeType =
+   | { fieldName: string; required?: never } // For the "Do not import" option
+   | TransactionField; // For the actual fields
 
 export interface BulkTransactionType {
    title: string;

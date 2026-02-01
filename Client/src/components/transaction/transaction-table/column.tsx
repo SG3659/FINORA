@@ -53,7 +53,7 @@ export const transactionColumns: ColumnDef<TransactionType>[] = [
       ),
       cell: ({ row }) => (
          <Checkbox
-            className="!border-black data-[state=checked]:!bg-gray-800 !text-white"
+            className="!border-black data-[state=checked]:!bg-gray-600 !text-white"
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
             aria-label="Select row"
@@ -61,6 +61,10 @@ export const transactionColumns: ColumnDef<TransactionType>[] = [
       ),
       enableSorting: false,
       enableHiding: false,
+   },
+   {
+      accessorKey: "title",
+      header: "Title",
    },
    {
       accessorKey: "createdAt",
@@ -75,10 +79,7 @@ export const transactionColumns: ColumnDef<TransactionType>[] = [
       ),
       cell: ({ row }) => format(row.getValue("createdAt"), "MMM dd, yyyy"),
    },
-   {
-      accessorKey: "title",
-      header: "Title",
-   },
+
    {
       accessorKey: "category",
       header: ({ column }) => (

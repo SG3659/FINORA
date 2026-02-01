@@ -2,7 +2,6 @@ import SignIn from "@/pages/auth/sign-in";
 import SignUp from "@/pages/auth/sign-up";
 import { AUTH_ROUTES, PROTECTED_ROUTES } from "./routePath";
 import Transactions from "@/pages/transections";
-import AppLayout from "@/layouts/app-layout";
 import Reports from "@/pages/reports"
 export const authRoutes = [
       { path: AUTH_ROUTES.SIGN_IN, element: <SignIn /> },
@@ -10,7 +9,7 @@ export const authRoutes = [
 ]
 
 export const protectedRoutes = [
-      { path: PROTECTED_ROUTES.OVERVIEW, element: <AppLayout /> },
+      { path: PROTECTED_ROUTES.OVERVIEW, element: <div >Overview</div> },
       { path: PROTECTED_ROUTES.TRANSACTIONS, element: <Transactions /> },
       { path: PROTECTED_ROUTES.REPORTS, element: <Reports /> },
 

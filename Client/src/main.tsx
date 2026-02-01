@@ -1,4 +1,3 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
@@ -8,21 +7,19 @@ import { store, persistor } from "@/redux/store.ts";
 import { PersistGate } from "redux-persist/integration/react";
 import { NuqsAdapter } from 'nuqs/adapters/react'
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
+  <Provider store={store}>
+    <PersistGate persistor={persistor}>
 
-        <NuqsAdapter>
-          <App />
-        </NuqsAdapter>
-        <Toaster
-          position="top-center"
-          expand={true}
-          duration={5000}
-          richColors
-          closeButton
-        />
-      </PersistGate>
-    </Provider>
-  </StrictMode>,
+      <NuqsAdapter>
+        <App />
+      </NuqsAdapter>
+      <Toaster
+        position="top-center"
+        expand={true}
+        duration={5000}
+        richColors
+        closeButton
+      />
+    </PersistGate>
+  </Provider>
 )

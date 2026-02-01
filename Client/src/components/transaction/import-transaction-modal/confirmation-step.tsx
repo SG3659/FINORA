@@ -91,50 +91,7 @@ const ConfirmationStep = ({
 
    const [bulkImportTransaction] = useBulkImportTransactionMutation();
 
-   const handleImport = () => {
-      const { transactions, hasValidationErrors } =
-         getAssignFieldToMappedTransactions();
-      console.log(transactions, "transactions");
 
-      if (hasErrors || hasValidationErrors) return;
-
-      if (transactions.length > MAX_IMPORT_LIMIT) {
-         toast.error(`Cannot import more than ${MAX_IMPORT_LIMIT} transactions`);
-         return;
-      }
-      resetProgress();
-      startProgress(10);
-      // Start progress
-      let currentProgress = 10;
-      const interval = setInterval(() => {
-         const increment = currentProgress < 90 ? 10 : 1;
-         currentProgress = Math.min(currentProgress + increment, 90);
-         updateProgress(currentProgress);
-      }, 250);
-
-      const payload = { transactions: transactions as BulkTransactionType[] };
-
-      console.log(payload, "payload");
-
-      bulkImportTransaction(payload)
-         .unwrap()
-         .then(() => {
-            updateProgress(100);
-            toast.success("Imported transactions successfully");
-         })
-         .catch((error) => {
-            resetProgress();
-            toast.error(error.data?.message || "Failed to import transactions");
-         })
-         .finally(() => {
-            clearInterval(interval);
-            setTimeout(() => {
-               doneProgress();
-               resetProgress();
-               onComplete();
-            }, 500);
-         });
-   };
 
    const getAssignFieldToMappedTransactions = () => {
       let hasValidationErrors = false;
@@ -182,6 +139,50 @@ const ConfirmationStep = ({
       return { transactions: results, hasValidationErrors };
    };
 
+   const handleImport = () => {
+      const { transactions, hasValidationErrors } =
+         getAssignFieldToMappedTransactions();
+      console.log(transactions, "transactions");
+
+      if (hasErrors || hasValidationErrors) return;
+
+      if (transactions.length > MAX_IMPORT_LIMIT) {
+         toast.error(`Cannot import more than ${MAX_IMPORT_LIMIT} transactions`);
+         return;
+      }
+      resetProgress();
+      startProgress(10);
+      // Start progress
+      let currentProgress = 10;
+      const interval = setInterval(() => {
+         const increment = currentProgress < 90 ? 10 : 1;
+         currentProgress = Math.min(currentProgress + increment, 90);
+         updateProgress(currentProgress);
+      }, 250);
+
+      const payload = { transactions: transactions as BulkTransactionType[] };
+
+      console.log(payload, "payload");
+
+      bulkImportTransaction(payload)
+         .unwrap()
+         .then(() => {
+            updateProgress(100);
+            toast.success("Imported transactions successfully");
+         })
+         .catch((error) => {
+            resetProgress();
+            toast.error(error.data?.message || "Failed to import transactions");
+         })
+         .finally(() => {
+            clearInterval(interval);
+            setTimeout(() => {
+               doneProgress();
+               resetProgress();
+               onComplete();
+            }, 500);
+         });
+   };
    const hasErrors = Object.keys(errors).length > 0;
 
    console.log(errors, "errors");
