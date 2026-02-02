@@ -32,7 +32,7 @@ export const authApi = apiClient.injectEndpoints({
       }),
       refresh: builder.mutation({
          query: () => ({
-            url: "/refresh-",
+            url: "/refresh",
             method: "POST",
          }),
       }),
