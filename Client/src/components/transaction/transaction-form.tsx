@@ -118,14 +118,14 @@ const TransactionForm = (props: {
       try {
          const payload = {
             title: values.title,
-            type: values.type,
+            type: values.type as "INCOME" | "EXPENSE",
             category: values.category,
             paymentMethod: values.paymentMethod,
             description: values.description || "",
             amount: Number(values.amount),
             date: values.date.toISOString(),
             isRecurring: values.isRecurring || false,
-            recurringInterval: values.frequency || null,
+            recurringInterval: (values.frequency || null) as "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY" | null,
          };
 
          if (isEdit && transactionId) {
@@ -133,15 +133,16 @@ const TransactionForm = (props: {
                await updateTransaction({ id: transactionId, transaction: payload }).unwrap()
                onCloseDrawer?.();
                toast.success("Transaction updated successfully!")
-
             } catch (error) {
                const errorMessage = (error as { data?: { message?: string } })?.data?.message || "Failed to update transaction"
 
                toast.error(errorMessage);
             }
-
+            return;
          }
          await createTransaction(payload).unwrap()
+         form.reset()
+         onCloseDrawer?.();
          toast.success("Transaction created successfully!");
 
       } catch (error) {
@@ -165,14 +166,6 @@ const TransactionForm = (props: {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 px-4">
                <div className="space-y-6">
                   {/* Receipt Upload Section */}
-                  {/* {!isEdit && (
-                     <RecieptScanner
-                        loadingChange={isScanning}
-                        onLoadingChange={setIsScanning}
-                        onScanComplete={handleScanComplete}
-                     />
-                  )} */}
-
                   {/* Transaction Type */}
                   <FormField
                      control={form.control}
@@ -184,7 +177,6 @@ const TransactionForm = (props: {
                               onValueChange={field.onChange}
                               defaultValue={field.value}
                               className="flex space-x-2"
-                           // disabled={isScanning}
                            >
                               <label
                                  htmlFor={_TransactionType.INCOME}
@@ -240,7 +232,6 @@ const TransactionForm = (props: {
                               <Input
                                  placeholder="Transaction title"
                                  {...field}
-                              // disabled={isScanning}
                               />
                            </FormControl>
                            <FormMessage />
@@ -259,7 +250,6 @@ const TransactionForm = (props: {
                               <div className="relative">
                                  <CurrencyInputField
                                     {...field}
-                                    // disabled={isScanning}
                                     onValueChange={(value) => field.onChange(value || "")}
                                     placeholder="₹0.00"
                                     prefix="₹"
@@ -289,7 +279,6 @@ const TransactionForm = (props: {
                               options={Categories}
                               placeholder="Select or type a category"
                               creatable
-                           // disabled={isScanning}
                            />
                            <FormMessage />
                         </FormItem>
@@ -353,7 +342,6 @@ const TransactionForm = (props: {
                            <Select
                               onValueChange={field.onChange}
                               value={field.value}
-                           // disabled={isScanning}
                            >
                               <FormControl className="w-full">
                                  <SelectTrigger>
@@ -420,7 +408,7 @@ const TransactionForm = (props: {
                               <Select
                                  onValueChange={field.onChange}
                                  defaultValue={field.value ?? undefined}
-                              // disabled={isScanning}
+
                               >
                                  <FormControl className="w-full">
                                     <SelectTrigger>
@@ -458,7 +446,6 @@ const TransactionForm = (props: {
                               <Textarea
                                  placeholder="Add notes about this transaction"
                                  className="resize-none"
-                                 // disabled={isScanning}
                                  {...field}
                               />
                            </FormControl>

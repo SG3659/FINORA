@@ -1,5 +1,5 @@
 import { useState } from "react";
-import DataTable from "../data-table/index";
+import DataTable from "@/components/data-table";
 import { useGetAllTransactionsQuery, useBulkDeleteTransactionMutation } from "@/api/transaction/transactionApi"
 import { _TransactionType, FilterType } from "@/@types/transaction/transactionTypes";
 import { transactionColumns } from "./column";
@@ -17,7 +17,7 @@ const TransactionTable = (props: {
       type: undefined,
       recurringStatus: undefined,
       pageNumber: 1,
-      pageSize: props.pageSize || 20,
+      pageSize: props.pageSize || 10,
    })
 
    const { debounceSearch, search, setSearch } = useDebounce(500);

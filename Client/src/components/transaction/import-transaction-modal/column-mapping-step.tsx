@@ -21,7 +21,7 @@ import {
    TableHeader,
    TableRow,
 } from "@/components/ui/table";
-import { CsvColumn, TransactionField } from "@/@types/transaction/transactionTypes";
+import { ColumnMappingStepProps, AvailableAttributeType } from "@/@types/transaction/transactionTypes";
 import {
    Select,
    SelectContent,
@@ -30,17 +30,7 @@ import {
    SelectValue,
 } from "@/components/ui/select";
 
-type ColumnMappingStepProps = {
-   csvColumns: CsvColumn[];
-   transactionFields: TransactionField[];
-   mappings: Record<string, string>;
-   onComplete: (mappings: Record<string, string>) => void;
-   onBack: () => void;
-};
 
-type AvailableAttributeType =
-   | { fieldName: string; required?: never } // For the "Do not import" option
-   | TransactionField; // For the actual fields
 
 const ColumnMappingStep = ({
    csvColumns,

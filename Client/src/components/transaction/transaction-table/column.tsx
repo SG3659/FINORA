@@ -9,6 +9,7 @@ import {
    RefreshCw,
    StopCircleIcon,
    Trash2,
+   Pencil
 } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -22,12 +23,13 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatCurrency } from "@/lib/format-currency";
-// import useEditTransactionDrawer from "@/hooks/use-edit-transaction-drawer";
+import useEditTransactionDrawer from "@/hook/use-edit-transaction-drawer";
 import { TransactionType } from "@/@types/transaction/transactionTypes";
 import { _TransactionFrequency, _TransactionType } from "@/@types/transaction/transactionTypes";
 import {
    useDeleteTransactionMutation,
    useDuplicateTransactionMutation,
+   useUpdateTransactionMutation,
 } from "@/api/transaction/transactionApi";
 import { toast } from "sonner";
 
@@ -53,7 +55,7 @@ export const transactionColumns: ColumnDef<TransactionType>[] = [
       ),
       cell: ({ row }) => (
          <Checkbox
-            className="!border-black data-[state=checked]:!bg-gray-800 !text-white"
+            className="!border-black data-[state=checked]:!bg-gray-600 !text-white"
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
             aria-label="Select row"
@@ -63,10 +65,15 @@ export const transactionColumns: ColumnDef<TransactionType>[] = [
       enableHiding: false,
    },
    {
+      accessorKey: "title",
+      header: "Title",
+   },
+   {
       accessorKey: "createdAt",
       header: ({ column }) => (
          <Button
             variant="ghost"
+            className="!pl-0"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
          >
             Date Created
@@ -75,10 +82,7 @@ export const transactionColumns: ColumnDef<TransactionType>[] = [
       ),
       cell: ({ row }) => format(row.getValue("createdAt"), "MMM dd, yyyy"),
    },
-   {
-      accessorKey: "title",
-      header: "Title",
-   },
+
    {
       accessorKey: "category",
       header: ({ column }) => (
@@ -101,10 +105,11 @@ export const transactionColumns: ColumnDef<TransactionType>[] = [
       header: ({ column }) => (
          <Button
             variant="ghost"
+            className="!p-0"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
          >
             Type
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <ArrowUpDown className="ml-0 h-4 w-4" />
          </Button>
       ),
       cell: ({ row }) => (
@@ -148,13 +153,16 @@ export const transactionColumns: ColumnDef<TransactionType>[] = [
       header: ({ column }) => (
          <Button
             variant="ghost"
+             className="!pl-10"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
          >
             Transaction Date
             <ArrowUpDown className="ml-2 h-4 w-4" />
          </Button>
       ),
-      cell: ({ row }) => format(row.original.date, "MMM dd, yyyy"),
+      cell: ({ row }) =>
+         <div className="text-center">{format(row.original.date, "MMM dd, yyyy")}</div>
+
    },
    {
       accessorKey: "paymentMethod",
@@ -236,13 +244,16 @@ export const transactionColumns: ColumnDef<TransactionType>[] = [
 const ActionsCell = ({ row }: { row: any }) => {
    const isRecurring = row.original.isRecurring;
    const transactionId = row.original.id;
-   // const { onOpenDrawer } = useEditTransactionDrawer();
+   const { onOpenDrawer } = useEditTransactionDrawer();
 
    const [duplicateTransaction, { isLoading: isDuplicating }] =
       useDuplicateTransactionMutation();
 
    const [deleteTransaction, { isLoading: isDeleting }] =
       useDeleteTransactionMutation();
+
+   const [updateTransaction, { isLoading: isUpdating }] =
+      useUpdateTransactionMutation();
 
    const handleDuplicate = (e: Event) => {
       e.preventDefault();
@@ -270,6 +281,26 @@ const ActionsCell = ({ row }: { row: any }) => {
          });
    };
 
+   const handleStopRecurring = (e: Event) => {
+      e.preventDefault();
+      if (isUpdating) return;
+      updateTransaction({
+         id: transactionId,
+         transaction: {
+            ...row.original,
+            isRecurring: false,
+            recurringInterval: null,
+         },
+      })
+         .unwrap()
+         .then(() => {
+            toast.success("Recurring transaction stopped successfully");
+         })
+         .catch((error) => {
+            toast.error(error.data?.message || "Failed to stop recurring transaction");
+         });
+   };
+
    return (
       <DropdownMenu>
          <DropdownMenuTrigger asChild>
@@ -281,15 +312,15 @@ const ActionsCell = ({ row }: { row: any }) => {
             className="w-44"
             align="end"
             onCloseAutoFocus={(e) => {
-               if (isDeleting || isDuplicating) {
+               if (isDeleting || isDuplicating || isUpdating) {
                   e.preventDefault();
                }
             }}
          >
-            {/* <DropdownMenuItem onClick={() => onOpenDrawer(transactionId)}>
+            <DropdownMenuItem onClick={() => onOpenDrawer(transactionId)}>
                <Pencil className="mr-1 h-4 w-4" />
                Edit
-            </DropdownMenuItem> */}
+            </DropdownMenuItem>
             <DropdownMenuItem
                className="relative"
                disabled={isDuplicating}
@@ -304,9 +335,16 @@ const ActionsCell = ({ row }: { row: any }) => {
 
             {isRecurring && (
                <>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem
+                     className="relative"
+                     disabled={isUpdating}
+                     onSelect={handleStopRecurring}
+                  >
                      <StopCircleIcon className="mr-1 h-4 w-4" />
                      Stop Recurring
+                     {isUpdating && (
+                        <Loader className="ml-1 h-4 w-4 absolute right-2 animate-spin" />
+                     )}
                   </DropdownMenuItem>
                </>
             )}
@@ -323,6 +361,6 @@ const ActionsCell = ({ row }: { row: any }) => {
                )}
             </DropdownMenuItem>
          </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu >
    );
 };

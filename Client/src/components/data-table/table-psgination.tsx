@@ -17,7 +17,6 @@ import { DataTablePaginationProps } from "@/@types/transaction/transactionTypes"
 export const DataTablePagination = ({
    pageNumber,
    pageSize,
-   totalCount,
    totalPages,
    onPageChange,
    onPageSizeChange,
@@ -33,11 +32,7 @@ export const DataTablePagination = ({
 
    return (
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 px-2">
-         <div className="flex-1 text-sm text-muted-foreground">
-            Showing {(pageNumber - 1) * pageSize + 1}-
-            {Math.min(pageNumber * pageSize, totalCount)} of {totalCount}
-         </div>
-         <div className="flex flex-col lg:flex-row lg:items-center space-y-2 lg:space-x-8 lg:space-y-0">
+         <div className="flex lg:flex-row lg:items-center space-y-2 lg:space-x-8 lg:space-y-0">
             {/* Rows Per Page Selector */}
             <div className="flex items-center space-x-2">
                <p className="text-sm font-medium">Rows per page</p>

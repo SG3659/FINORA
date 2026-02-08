@@ -9,7 +9,7 @@ interface PageHeaderProps {
 
 const PageHeader = ({ title, subtitle, rightAction, renderPageHeader }: PageHeaderProps) => {
    return (
-      <div className="w-full pb-20 pt-4 px-5 lg:px-0 bg-slate-600 text-white">
+      <div className="w-full pb-20 pt-4 px-5 lg:px-0  text-foreground">
          <div className="w-full max-w-[var(--max-width)]  mx-auto">
             {renderPageHeader
                ? <Fragment>{renderPageHeader}</Fragment>
@@ -18,7 +18,7 @@ const PageHeader = ({ title, subtitle, rightAction, renderPageHeader }: PageHead
                      {(title || subtitle) && (
                         <div className="space-y-1">
                            {title && <h2 className="text-2xl lg:text-4xl font-medium">{title}</h2>}
-                           {subtitle && <p className="text-white/60 text-sm">{subtitle}</p>}
+                           {subtitle && <p className=" text-sm">{subtitle}</p>}
                         </div>
                      )}
                      {rightAction && rightAction}

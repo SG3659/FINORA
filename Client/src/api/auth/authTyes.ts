@@ -1,5 +1,6 @@
 export interface AuthState {
-  accessToken: string | null;
+  refreshToken: string | null;
+  refreshExpireAt: number | null;
   expiresAt: number | null;
   user: User | null;
   reportSetting: ReportSetting | null;

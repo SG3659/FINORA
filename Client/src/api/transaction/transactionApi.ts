@@ -63,9 +63,10 @@ const transactionApi = apiClient.injectEndpoints({
       updateTransaction: builder.mutation<void, UpdateTransactionPayload>({
          query: ({ id, transaction }) => ({
             url: `/transaction/update/${id}`,
-            method: "PUT",
+            method: "PATCH",
             body: transaction
          }),
+         invalidatesTags: ["transactions", "analytics"],
       }),
       getSingleTransaction: builder.query<GetSingleTransactionResponse, string>({
          query: (id) => ({
@@ -76,7 +77,7 @@ const transactionApi = apiClient.injectEndpoints({
       bulkImportTransaction: builder.mutation<void, BulkImportTransactionPayload>(
          {
             query: (body) => ({
-               url: "/transaction/bulk-transaction",
+               url: "/transaction/bulk-insert",
                method: "POST",
                body,
             }),

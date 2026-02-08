@@ -8,8 +8,8 @@ export const getAllReportController = asyncHandler(
    async (req: Request, res: Response) => {
       const UserId = req.auth?._id;
       const pagination = {
-         pageSize: parseInt(req.query.limit as string) || 20,// set the page limit
-         pageNumber: parseInt(req.query.page as string) || 1,
+         pageSize: parseInt(req.query.pageSize as string) || 10,// set the page limit
+         pageNumber: parseInt(req.query.pageNumber as string) || 1,
       }
       const result = await getAllReportService(UserId, pagination)
       return res.status(HTTPSTATUS.OK).json({ message: "Report Fetch successfully", data: result })

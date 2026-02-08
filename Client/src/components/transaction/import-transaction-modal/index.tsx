@@ -98,8 +98,8 @@ const ImportTransactionModal = () => {
       <Dialog open={open} onOpenChange={handleClose}>
          <Button
             variant="outline"
-            className="!shadow-none !cursor-pointer !border-gray-500
-       !text-white !bg-transparent"
+            className="!shadow-none !cursor-pointer !border-gray-200
+       !text-foreground"
             onClick={() => setOpen(true)}
          >
             <ImportIcon className="!w-5 !h-5" />

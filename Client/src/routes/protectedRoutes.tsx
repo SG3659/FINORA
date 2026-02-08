@@ -3,8 +3,8 @@ import { AUTH_ROUTES } from "./common/routePath";
 import { Navigate, Outlet } from "react-router-dom";
 
 const PROTECTEDROUTE = () => {
-   const { user, accessToken } = useTypedSelector((state) => state.auth)
-   if (accessToken && user) return <Outlet />
+   const { user, refreshToken } = useTypedSelector((state) => state.auth)
+   if (refreshToken && user) return <Outlet />
    return <Navigate to={AUTH_ROUTES.SIGN_IN} replace />
 }
 export default PROTECTEDROUTE; 

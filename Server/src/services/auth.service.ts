@@ -85,7 +85,7 @@ export const loginService = async (body: loginSchemaType) => {
          otp_expireAt: new Date(Date.now() + 10 * 60 * 1000)
       });
       await otpRecord.save();
-   }  
+   }
 }
 export const otpVerifyService = async (body: otpSchemaType) => {
    const { email, otp } = body;
@@ -140,7 +140,7 @@ export const refereshTokenService = async (incomingRefreshToken: string) => {
          throw new UnauthorizedException("refreshToken mismatch")
       }
       const { refreshToken, accessToken, tokenExpiresAt, refreshExpiresAt } = await generateRefreshAndAccessToken(user.id)
-      return { accessToken: accessToken, newRefreshToken: refreshToken }
+      return { accessToken: accessToken, newRefreshToken: refreshToken, tokenExpiresAt, refreshExpiresAt }
 
    } catch (error) {
       throw new InternalServerException("Could not refresh token")
@@ -166,12 +166,11 @@ const generateRefreshAndAccessToken = async (userId: string) => {
 }
 
 export const logoutService = async (userId: string) => {
-   const user = await UserModel.findById(userId);
-   if (!user) {
-      throw new NotFoundException("User not found");
-   }
-   user.resetToken = null;
-   await user.save({ validateBeforeSave: false });
+   await UserModel.findByIdAndUpdate(
+      userId,
+      { $set: { refreshToken: null } },
+      { new: true }
+   );
 }
 
 export const deleteAccountService = async (userId: string) => {
