@@ -4,10 +4,9 @@ import { TrendingDownIcon, TrendingUpIcon, LucideIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/format-currency";
 import { formatPercentage } from "@/lib/format-percentage";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { DateRangeEnum, DateRangeType } from "@/@types/analytic";
-
+import CardSkeleton from "./skeleton";
 type CardType = "balance" | "income" | "expenses" | "savings";
 type CardStatus = {
    label: string;
@@ -149,20 +148,7 @@ const SummaryCard: FC<SummaryCardProps> = ({
          : null;
 
    if (isLoading) {
-      return (
-         <Card className="!border-none !border-0 !gap-0 !bg-white/5">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 !pb-5">
-               <Skeleton className="h-4 w-24 bg-white/30" />
-            </CardHeader>
-            <CardContent className="space-y-8">
-               <Skeleton className="h-10.5 w-full bg-white/30" />
-               <div className="flex items-center gap-2">
-                  <Skeleton className="h-3 w-12 bg-white/30" />
-                  <Skeleton className="h-3 w-16 bg-white/30" />
-               </div>
-            </CardContent>
-         </Card>
-      );
+      return <CardSkeleton />
    }
 
    const formatCountupValue = (val: number) => {
@@ -175,7 +161,7 @@ const SummaryCard: FC<SummaryCardProps> = ({
    };
 
    return (
-      <Card className="group !border !gap-0 bg-white hover:shadow-lg hover:scale-y-105 hover:duration-300 ">
+      <Card className="group !border !gap-0 bg-white hover:shadow-lg hover:scale-105 hover:duration-500 hover:bg-zinc-50 ">
          <CardHeader className="flex flex-row items-center justify-between space-y-0 !pb-5">
             <CardTitle className="text-[15px] text-gray-400 font-bold">
                {title}

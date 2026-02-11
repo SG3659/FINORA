@@ -1,6 +1,8 @@
 import { DateRangeSelect, } from "@/components/date-range-select";
-import AddTransactionDrawer from "@/components/transaction/add-transaction-drawer";
 import { DateRangeType } from "@/@types/analytic"
+import { Button } from "../ui/button";
+import { ChartNoAxesCombined } from "lucide-react"
+import { useNavigate, useLocation } from "react-router-dom";
 interface Props {
    title: string;
    subtitle: string;
@@ -9,6 +11,9 @@ interface Props {
 }
 
 const DashboardHeader = ({ title, subtitle, dateRange, setDateRange }: Props) => {
+   const location = useLocation()
+   const navigate = useNavigate()
+
    return (
       <div className="flex flex-row items-start justify-between space-y-7">
          <div className="space-y-1 text-foreground">
@@ -17,7 +22,17 @@ const DashboardHeader = ({ title, subtitle, dateRange, setDateRange }: Props) =>
          </div>
          <div className="flex justify-end gap-4 mb-6">
             <DateRangeSelect dateRange={dateRange || null} setDateRange={(range) => setDateRange?.(range)} />
-            <AddTransactionDrawer />
+            {location.pathname === "/overview" && (
+               <Button
+                  className="!cursor-pointer !text-white"
+                  onClick={() => navigate("/analyse")}
+               >
+                  <ChartNoAxesCombined className="h-4 w-4" />
+                  Analyse
+               </Button>
+            )}
+
+
          </div>
       </div>
    );

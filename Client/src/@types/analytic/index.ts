@@ -96,3 +96,6 @@ export interface DateRangeSelectProps {
   setDateRange: (range: DateRangeType) => void;
   defaultRange?: DateRangeEnumType;
 }
+export interface PropsType {
+   dateRange?: DateRangeType;
+}

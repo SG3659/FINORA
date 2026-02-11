@@ -76,7 +76,7 @@ export const transactionColumns: ColumnDef<TransactionType>[] = [
             className="!pl-0"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
          >
-            Date Created
+            Date
             <ArrowUpDown className="ml-2 h-4 w-4" />
          </Button>
       ),
